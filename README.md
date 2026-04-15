@@ -17,7 +17,7 @@ For students, the recommended workflow is:
 ```bash
 ls -lh ./apptainer-cuda.sif
 ```
-3. Start training inside the container:
+3. For an interactive session (GPU already allocated), start training inside the container:
 ```bash
 ./scripts/run_apptainer_v107.sh
 ```
@@ -29,10 +29,49 @@ If `apptainer-cuda.sif` is missing, do not start training. Re-run the build step
 - The container runner automatically enables NVIDIA GPU support with `--nv`.
 - The default bind mounts include `/scratch`, and you can also mount `/data/jliang12` by running with `MOUNT_DATA=true ./scripts/run_apptainer_v107.sh`.
 - The default dataset configuration is `config/dataset_locations_asu_sol.yml`, which is intended for the ASU SOL-style scratch layout.
+- `./scripts/run_apptainer_v107.sh` is also `sbatch`-ready for ASU SOL (`--gres=gpu:a100:2`, `--time=7-00:00:00`) and can be submitted directly as a SLURM job script.
 - If you need different dataset paths, override them with `DATASET_LOCATIONS_YML=config/dataset_locations_dfs.yml ./scripts/run_apptainer_v107.sh`.
 - For a quick sanity check before a long run, use `DEBUG_RUN=true ./scripts/run_apptainer_v107.sh`.
 - Make sure your datasets and pretrained backbone checkpoint are available at the paths referenced by the run script before launching a full job.
 - If the build is slow or fails for temporary space reasons, set `SCRATCH` so Apptainer can use a writable cache and temp directory.
+
+## SLURM Submission (ASU SOL)
+
+Use `sbatch` for scheduled training jobs. The script already includes SLURM headers for:
+- 2x A100 GPUs (`--gres=gpu:a100:2`)
+- 7-day walltime (`--time=7-00:00:00`)
+
+Submit the job:
+```bash
+sbatch ./scripts/run_apptainer_v107.sh
+```
+
+Optionally override runtime variables at submit time:
+```bash
+sbatch --export=ALL,DEBUG_RUN=true,BATCHSIZE=8 ./scripts/run_apptainer_v107.sh
+```
+
+Override GPU type/count at submit time (replaces script default `--gres=gpu:a100:2`):
+```bash
+# Request 1x A100
+sbatch --gres=gpu:a100:1 ./scripts/run_apptainer_v107.sh
+
+# Request 2x V100
+sbatch --gres=gpu:v100:2 ./scripts/run_apptainer_v107.sh
+
+```
+
+Monitor the queue:
+```bash
+squeue --me
+```
+
+Check logs:
+```bash
+ls -lh foundationx_v107_*.out foundationx_v107_*.err
+```
+
+Directly running `./scripts/run_apptainer_v107.sh` is intended for interactive sessions where GPU resources have already been allocated (for example, an interactive SLURM allocation).
 
 ## Recommended Training Workflow
 

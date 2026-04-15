@@ -1,11 +1,25 @@
 #!/bin/bash
 
+#SBATCH --job-name=foundationx_v107
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=128G
+#SBATCH --time=7-00:00:00
+#SBATCH -p public
+#SBATCH -q public
+#SBATCH --gres=gpu:a100:2
+#SBATCH --output=%x_%j.out
+#SBATCH --error=%x_%j.err
+
+set -euo pipefail
+
 # This script launches the training process inside an Apptainer container.
 # It is based on scripts/run_IntegratedModel_Foundation6_ClsLocSeg_v107.sh
 
 # Configuration from the original script
 CONFIGFILE=config/DINO/DINO_4scale_swinBASE.py
-ddLOGFILE=$SCRATCH/FoundationX/Model_Checkpoints/IntegratedModel_DINOpipeline/IntegratedModel_FoundationX3/run104_Ark6F6_ClsLocSeg_b24_AdamW_LockReleaseAll_RCons_1LocDec_TESTrun
+LOGFILE=${LOGFILE:-${SCRATCH:-/scratch/$USER}/FoundationX/Model_Checkpoints/IntegratedModel_DINOpipeline/IntegratedModel_FoundationX3/run104_Ark6F6_ClsLocSeg_b24_AdamW_LockReleaseAll_RCons_1LocDec_TESTrun}
 
 # backbone_dir=/data/jliang12/dongaoma/Ark_models/TSconsist_NoOD_MIMIC_CheXpert_ChestXray14_RSNAPneumonia_VinDrCXR_Shenzhen_ep200.pth.tar
 backbone_dir=/scratch/sejong/class-dataset/models/Ark_models/TSconsist_NoOD_MIMIC_CheXpert_ChestXray14_RSNAPneumonia_VinDrCXR_Shenzhen_ep200.pth.tar
@@ -72,6 +86,14 @@ cyclictask=chexpertCLS_nihchestxray14CLS_vindrcxrCLS
 
 export MASTER_ADDR=127.0.0.1
 export MASTER_PORT=29501
+
+if [[ -z "${SLURM_JOB_ID:-}" ]]; then
+	echo "Running outside SLURM. This mode assumes GPU resources are already available (interactive session)."
+else
+	LOGFILE="${LOGFILE}_job${SLURM_JOB_ID}"
+	echo "Running under SLURM job ${SLURM_JOB_ID} on ${SLURM_JOB_NODELIST}."
+	echo "SLURM output directory: ${LOGFILE}"
+fi
 
 # Execute the python script within the Apptainer container
 # The --nv flag enables NVIDIA GPU support
