@@ -1,0 +1,59 @@
+Bootstrap: docker
+From: nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
+
+%environment
+    export PYTHONUNBUFFERED=1
+    export DEBIAN_FRONTEND=noninteractive
+    export TZ=UTC
+    # Ensure the virtualenv is at the front of the PATH for all shells
+    export VIRTUAL_ENV="/opt/venv"
+    export PATH="/opt/venv/bin:/root/.local/bin:$PATH"
+
+%files
+    requirements-cuda.txt /opt/requirements-cuda.txt
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    export TZ=America/Phoenix
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+    
+    apt-get update && apt-get install -y --no-install-recommends \
+        build-essential gcc g++ git wget curl tmux htop rsync ca-certificates \
+	    libopencv-dev python3-opencv \
+        python3-dev ninja-build
+    rm -rf /var/lib/apt/lists/*
+    
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="/root/.local/bin:$PATH"
+    
+    uv venv --python 3.12 /opt/venv
+    export VIRTUAL_ENV="/opt/venv"
+    export PATH="/opt/venv/bin:$PATH"
+
+    grep -v '^MultiScaleDeformableAttention$' /opt/requirements-cuda.txt > /opt/requirements-cuda-base.txt
+    uv pip install --no-cache -r /opt/requirements-cuda-base.txt
+
+    # Install Deformable DETR
+    # rm -rf /tmp/Deformable-DETR
+    mkdir -p /scratch /data
+    mkdir /workspace/Deformable-DETR -p
+    cd /workspace/Deformable-DETR
+    git clone --depth 1 https://github.com/jliangclass/Deformable-DETR-modified.git
+    cd ./Deformable-DETR-modified/models/ops
+    
+    # since physical CUDA might not exist during build, we "force" CUDA to compile
+    export FORCE_CUDA=1
+    export CUDA_HOME=/usr/local/cuda
+    export PATH="${CUDA_HOME}/bin:${PATH}"
+    export LD_LIBRARY_PATH="${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}"
+
+    # 7.0 (V100) | 7.5 (RTX 8000) | 8.0 (A100) | 8.6 (RTX 30) | 8.9 (RTX 40) | 9.0 (H100) | 10.0 (RTX 5090)
+    # export TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6;8.9;9.0;10.0"
+
+    # 7.0 (V100) | 7.5 (RTX 8000) | 8.0 (A100)
+    export TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0"
+
+    uv pip install --no-cache --no-build-isolation .
+
+%runscript
+    exec /bin/bash "$@"

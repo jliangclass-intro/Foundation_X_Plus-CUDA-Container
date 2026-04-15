@@ -1,0 +1,21 @@
+version: 1
+cluster: DFS
+source_file: /data/jliang12/sejong/git-shared/jlianglab/Foundation_X/datasets_medical.py
+
+# Extracted from all executable path literals starting with /mnt/dfs in datasets_medical.py.
+# Keep this file as the DFS path counterpart to dataset_locations_asu_sol.yml.
+
+directories:
+  jsrt_all247images: /mnt/dfs/jpang12/datasets/JSRT/All247images
+  vindr_cxr_root: /mnt/dfs/jpang12/datasets/VinDr-CXR/physionet.org/files/vindr-cxr/1.0.0
+  tbx11k_root: /mnt/dfs/jpang12/datasets/tbx11k
+  tbx11k_tbx11k: /mnt/dfs/jpang12/datasets/tbx11k/TBX11K
+  chestxdet_root: /mnt/dfs/nuislam/Data/ChestX-Det
+  nih_chestxray14_images: /mnt/dfs/nuislam/Data/ChestXRay14_images
+  node21_ann_root: /mnt/dfs/nuislam/Data/NODE21_ann
+  chexpert_v1_root: /data/jliang12/jpang12/dataset/CheXpert-v1.0/
+  ptx_stage2_images: /data/jliang12/jpang12/dataset/Pneumothorax_segmentation/stage_2_images/
+
+files:
+  chestxdet_train_json: /mnt/dfs/nuislam/Data/ChestX-Det/ChestX_det_train_NAD_v2.json
+  chestxdet_test_json: /mnt/dfs/nuislam/Data/ChestX-Det/ChestX_det_test_NAD_v2.json

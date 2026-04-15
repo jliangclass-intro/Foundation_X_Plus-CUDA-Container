@@ -1,0 +1,68 @@
+# Pytorch 2.6 dropped support for compute capability 7.0 (Tesla V100), (A100 == Compute Cap 8.0)
+# Hence, we use pytorch 2.5.1 for maximum compatibility
+torch==2.5.1
+torchvision==0.20.1
+timm>=0.9.0
+pandas>=2.0.0
+Pillow>=10.0.0
+numpy>=1.24.0
+hydra-core>=1.3.0
+omegaconf>=2.3.0
+torchmetrics>=1.0.0
+einops
+
+# transformers/hf modules
+transformers
+accelerate
+datasets
+bitsandbytes
+
+# Optional, but, would be helpful and used in the future
+loguru
+arrow
+scikit-learn
+matplotlib
+seaborn
+tqdm
+psutil
+
+# Medical image formats
+nibabel
+pydicom
+simpleitk
+scikit-image
+
+# For localization
+pycocotools
+
+# Configuration systems
+hydra-colorlog
+yacs
+
+# Image processing
+opencv-python
+colorcet
+
+# Deep Learning Experiment tracking
+wandb
+
+# MONAI
+optree
+termcolor
+fire
+
+# mmdet is CUDA only for now. (https://github.com/open-mmlab/)
+mmdet
+open-clip-torch
+nvidia-ml-py
+
+# Foundation X+ requirements
+addict
+yapf
+memory_profiler
+objgraph
+albumentations
+
+# cuda only. https://github.com/fundamentalvision/Deformable-DETR
+# This will be built in apptainer-cuda.def
+# MultiScaleDeformableAttention
