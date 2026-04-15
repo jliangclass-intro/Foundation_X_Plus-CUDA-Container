@@ -1,6 +1,47 @@
 ![](https://github.com/jlianglab/Foundation_X/blob/main/Foundation_X%2B/Figures/FoundationX%2B_Logo.png)
 <!-- # Integrating Classification, Localization, and Segmentation through Lock-Release Pretraining Strategy for Chest X-ray Analysis -->
 
+## CUDA Apptainer Container Version
+
+This repository has been converted into a CUDA-enabled Apptainer container workflow so training can be run in a more reproducible environment on shared GPU systems.
+
+## Student Quick Start
+
+For students, the recommended workflow is:
+
+1. Build the Apptainer image:
+```bash
+./cuda-apptainer.sh build
+```
+2. Verify that the image was created successfully:
+```bash
+ls -lh ./apptainer-cuda.sif
+```
+3. Start training inside the container:
+```bash
+./scripts/run_apptainer_v107.sh
+```
+
+If `apptainer-cuda.sif` is missing, do not start training. Re-run the build step and make sure `apptainer` is available on the system.
+
+## Notes for Students
+
+- The container runner automatically enables NVIDIA GPU support with `--nv`.
+- The default bind mounts include `/scratch`, and you can also mount `/data/jliang12` by running with `MOUNT_DATA=true ./scripts/run_apptainer_v107.sh`.
+- The default dataset configuration is `config/dataset_locations_asu_sol.yml`, which is intended for the ASU SOL-style scratch layout.
+- If you need different dataset paths, override them with `DATASET_LOCATIONS_YML=config/dataset_locations_dfs.yml ./scripts/run_apptainer_v107.sh`.
+- For a quick sanity check before a long run, use `DEBUG_RUN=true ./scripts/run_apptainer_v107.sh`.
+- Make sure your datasets and pretrained backbone checkpoint are available at the paths referenced by the run script before launching a full job.
+- If the build is slow or fails for temporary space reasons, set `SCRATCH` so Apptainer can use a writable cache and temp directory.
+
+## Recommended Training Workflow
+
+1. Confirm that `apptainer` is installed and your node has access to an NVIDIA GPU.
+2. Build `apptainer-cuda.sif` once in the repository root.
+3. Verify the `.sif` file exists before every training run.
+4. Run `./scripts/run_apptainer_v107.sh` from the repository root.
+5. Use `DEBUG_RUN=true` first if you are launching this code for the first time on a new machine.
+
 Foundation X+ is an efficient end-to-end framework for multi-task medical imaging that integrates classification, localization, and segmentation using diverse expert-level annotations across datasets. It leverages Cyclic Training, Lock-Release Pretraining, and a Student-Teacher learning paradigm to ensure balanced learning, strong generalization, and reduced overfitting. Foundation X+ further introduces Region-Guided ROI Alignment for improved localization-aware feature learning, and adopts a single shared localization decoder with lightweight task-specific heads, significantly reducing model size while maintaining performance.
 
 ## Data Splits and Bounding Box Annotations
