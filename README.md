@@ -9,7 +9,7 @@ This repository has been converted into a CUDA-enabled Apptainer container workf
 
 For students, the recommended workflow is:
 
-1. Build the Apptainer image:
+1. (One time only) Build the Apptainer image (may take up to 1 hour to build):
 ```bash
 ./cuda-apptainer.sh build
 ```
@@ -17,12 +17,15 @@ For students, the recommended workflow is:
 ```bash
 ls -lh ./apptainer-cuda.sif
 ```
+Expected size is around 7.4 GB.
 3. For an interactive session (GPU already allocated), start training inside the container:
 ```bash
 ./scripts/run_apptainer_v107.sh
 ```
 
-If `apptainer-cuda.sif` is missing, do not start training. Re-run the build step and make sure `apptainer` is available on the system.
+If `apptainer-cuda.sif` is missing, script will fail. Re-run the build step and make sure `apptainer` is available on the system, and build process succeeded.
+
+**Note**: Once .sif file is built, no need to re-build again, you can re-use .sif file.
 
 ## Notes for Students
 
