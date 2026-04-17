@@ -375,8 +375,11 @@ def _load_dataset_config_from_yml():
             config_train_key = f'loc_{config_prefix}_trainList'
             config_test_key = f'loc_{config_prefix}_testList'
             
-            if config_root_key in DATASETS_CONFIG and root:
-                DATASETS_CONFIG[config_root_key] = root
+            # Allow localization to override root independently from classification,
+            # e.g. classification.node21.loc_node21_root in YAML.
+            loc_root = dataset.get(config_root_key, root)
+            if config_root_key in DATASETS_CONFIG and loc_root:
+                DATASETS_CONFIG[config_root_key] = loc_root
             
             # Handle JSON splits for localization
             json_train_key = f'train_json'

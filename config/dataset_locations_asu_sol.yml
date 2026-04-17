@@ -52,10 +52,10 @@ classification:
       test: /scratch/sejong/class-dataset/cxr-full/TBX11K/lists/TBX11K_val.txt
 
   node21:
-    images: /scratch/sejong/class-dataset/NODE21/
+    images: /scratch/sejong/class-dataset/NODE21/png_images
     splits:
-      train: data_files_splits/node21_dataset/train.txt
-      test: data_files_splits/node21_dataset/test.txt
+      train: /scratch/sejong/class-dataset/NODE21/data_files_splits/node21_dataset/train.txt
+      test: /scratch/sejong/class-dataset/NODE21/data_files_splits/node21_dataset/test.txt
       train_json: /scratch/sejong/class-dataset/NODE21/data_files_splits/node21_dataset/Node21_Nodule_Bbox_NAD_train_3.json
       test_json: /scratch/sejong/class-dataset/NODE21/data_files_splits/node21_dataset/Node21_Nodule_Bbox_NAD_test_3.json
 
@@ -80,7 +80,7 @@ classification:
       test: /scratch/sejong/class-dataset/cxr-full/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_test.txt
 
   candid_ptx:
-    images: /scratch/sejong/class-dataset/CANDID-PTX
+    images: /scratch/sejong/class-dataset/CANDID-PTX/dataset
     splits:
       train: /scratch/sejong/class-dataset/CANDID-PTX/data_files_splits/candid_ptx/CANDIDPTX_cls_train.txt
       val: /scratch/sejong/class-dataset/CANDID-PTX/data_files_splits/candid_ptx/CANDIDPTX_cls_val.txt

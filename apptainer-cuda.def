@@ -38,7 +38,7 @@ From: nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
     mkdir -p /scratch /data
     mkdir /workspace/Deformable-DETR -p
     cd /workspace/Deformable-DETR
-    git clone --depth 1 https://github.com/jliangclass/Deformable-DETR-modified.git
+    git clone --depth 1 https://github.com/jliangclass-intro/Deformable-DETR-modified.git
     cd ./Deformable-DETR-modified/models/ops
     
     # since physical CUDA might not exist during build, we "force" CUDA to compile

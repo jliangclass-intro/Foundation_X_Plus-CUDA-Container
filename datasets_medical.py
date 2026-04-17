@@ -1565,6 +1565,8 @@ class NODE21(Dataset):
     self.img_list = []
     self.img_label = []
     self.augment = augment
+    images_path_norm = os.path.normpath(images_path)
+    images_path_has_png_dir = os.path.basename(images_path_norm) == "png_images"
     with open(file_path, "r") as fileDescriptor:
       line = True
       while line:
@@ -1572,7 +1574,10 @@ class NODE21(Dataset):
         if line:
           lineItems = line.split()
 
-          imagePath = os.path.join(images_path, "png_images", lineItems[0])
+          if images_path_has_png_dir:
+              imagePath = os.path.join(images_path, lineItems[0])
+          else:
+              imagePath = os.path.join(images_path, "png_images", lineItems[0])
           imageLabel = int(lineItems[1])
         #   print("CHECK", imagePath, imageLabel)
         #   imageLabel = [int(i) for i in imageLabel]

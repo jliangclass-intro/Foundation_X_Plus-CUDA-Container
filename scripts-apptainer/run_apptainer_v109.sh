@@ -3,8 +3,8 @@
 #SBATCH --job-name=foundationx_v107
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=128G
+#SBATCH --cpus-per-task=10
+#SBATCH --mem=100G
 #SBATCH --time=7-00:00:00
 #SBATCH -p public
 #SBATCH -q public
@@ -14,12 +14,23 @@
 
 set -euo pipefail
 
+# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
+# all of them
+# cyclictask=chexpertCLS_nihchestxray14CLS_vindrcxrCLS_nihshenzenCLS_mimic2CLS_tbx11kCLS_node21CLS_candidptxCLS_rsnapneumoniaCLS_chestxdetCLS_siimacrCLS_tbx11kLOC_node21LOC_candidptxLOC_rsnapneumoniaLOC_chestxdetLOC_siimacrLOC_candidptxSEG_chestxdetSEG_siimacrSEG
+
+# This v107 uses only classification, Chexpert, Xray14 and VINDR.
+cyclictask=chexpertCLS_nihchestxray14CLS_vindrcxrCLS
+
+# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
+
 # This script launches the training process inside an Apptainer container.
 # It is based on scripts/run_IntegratedModel_Foundation6_ClsLocSeg_v107.sh
 
 # Configuration from the original script
 CONFIGFILE=config/DINO/DINO_4scale_swinBASE.py
-LOGFILE=${LOGFILE:-${SCRATCH:-/scratch/$USER}/FoundationX/Model_Checkpoints/IntegratedModel_DINOpipeline/IntegratedModel_FoundationX3/run104_Ark6F6_ClsLocSeg_b24_AdamW_LockReleaseAll_RCons_1LocDec_TESTrun}
+LOGFILE=${LOGFILE:-${SCRATCH:-/scratch/$USER}/FoundationX/v107/Model_Checkpoints/IntegratedModel_DINOpipeline/IntegratedModel_FoundationX3/run104_Ark6F6_ClsLocSeg_b24_AdamW_LockReleaseAll_RCons_1LocDec_TESTrun}
 
 # backbone_dir=/data/jliang12/dongaoma/Ark_models/TSconsist_NoOD_MIMIC_CheXpert_ChestXray14_RSNAPneumonia_VinDrCXR_Shenzhen_ep200.pth.tar
 backbone_dir=/scratch/sejong/class-dataset/models/Ark_models/TSconsist_NoOD_MIMIC_CheXpert_ChestXray14_RSNAPneumonia_VinDrCXR_Shenzhen_ep200.pth.tar
@@ -80,9 +91,6 @@ DEFAULT_BIND_DIRS="/scratch"
 if [[ "$MOUNT_DATA" == "true" ]]; then
 	DEFAULT_BIND_DIRS="/scratch /data/jliang12"
 fi
-
-# cyclictask=chexpertCLS_nihchestxray14CLS_vindrcxrCLS_nihshenzenCLS_mimic2CLS_tbx11kCLS_node21CLS_candidptxCLS_rsnapneumoniaCLS_chestxdetCLS_siimacrCLS_tbx11kLOC_node21LOC_candidptxLOC_rsnapneumoniaLOC_chestxdetLOC_siimacrLOC_candidptxSEG_chestxdetSEG_siimacrSEG
-cyclictask=chexpertCLS_nihchestxray14CLS_vindrcxrCLS
 
 export MASTER_ADDR=127.0.0.1
 export MASTER_PORT=29501
