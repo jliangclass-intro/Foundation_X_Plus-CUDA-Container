@@ -50,8 +50,8 @@ From: nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
     # 7.0 (V100) | 7.5 (RTX 8000) | 8.0 (A100) | 8.6 (RTX 30) | 8.9 (RTX 40) | 9.0 (H100) | 10.0 (RTX 5090)
     # export TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6;8.9;9.0;10.0"
 
-    # 7.0 (V100) | 7.5 (RTX 8000) | 8.0 (A100)
-    export TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0"
+    # 7.0 (V100) | 7.5 (RTX 8000) | 8.0 (A100) | 9.0 (H100)
+    export TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;9.0"
 
     uv pip install --no-cache --no-build-isolation .
 

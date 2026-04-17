@@ -1,5 +1,3 @@
-version: 1
-
 roots:
   classroom: /scratch/sejong/class-dataset
 

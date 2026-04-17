@@ -17,12 +17,15 @@ set -euo pipefail
 # -------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------
 
-# all of them
+## all of them
 # cyclictask=chexpertCLS_nihchestxray14CLS_vindrcxrCLS_nihshenzenCLS_mimic2CLS_tbx11kCLS_node21CLS_candidptxCLS_rsnapneumoniaCLS_chestxdetCLS_siimacrCLS_tbx11kLOC_node21LOC_candidptxLOC_rsnapneumoniaLOC_chestxdetLOC_siimacrLOC_candidptxSEG_chestxdetSEG_siimacrSEG
 
-## This configuration trains on NIH ChestX-ray14 classification, Node21 classification, Node21 localization, CANDID-PTX classification, CANDID-PTX localization and CANDID-PTX segmentation.
+## v108 configuration trains on NIH ChestX-ray14 classification, Node21 classification, Node21 localization, CANDID-PTX classification, CANDID-PTX localization and CANDID-PTX segmentation.
 # Reference: https://github.com/jlianglab/Foundation_X/tree/main/Foundation_X%2B
 cyclictask=nihchestxray14CLS_node21CLS_node21LOC_candidptxCLS_candidptxLOC_candidptxSEG
+
+## v109 uses only classification - ChexPert, Xray14 and VINDR, like ARK.
+# cyclictask=chexpertCLS_nihchestxray14CLS_vindrcxrCLS
 
 # -------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------
