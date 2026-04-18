@@ -48,16 +48,16 @@ DATASETS_CONFIG = {
     "cls_mimiccxr_testList": DATASET_DIR + "cxr-256/MIMIC_jpeg/data_files_splits/ark6_classificationTask/mimic-cxr-2.0.0-test.csv",
 
     # TBX11K - Classification - Localization
-    "cls_tbx11k_root": DATASET_DIR + "cxr-full/TBX11K/",
+    "cls_tbx11k_root": DATASET_DIR + "/TBX11K/",
     "cls_tbx11k_trainList": "lists/TBX11K_train.txt",
     "cls_tbx11k_valList": None,
     "cls_tbx11k_testList": "lists/TBX11K_val.txt",
 
     "loc_tbx11k_trainTag": "tbx11k_catagnostic_train",
     "loc_tbx11k_testTag": "tbx11k_catagnostic_test",
-    "loc_tbx11k_root": DATASET_DIR + "cxr-full/TBX11K/imgs",
-    "loc_tbx11k_trainList": DATASET_DIR + "cxr-full/TBX11K/annotations/json/all_train.json",
-    "loc_tbx11k_testList": DATASET_DIR + "cxr-full/TBX11K/annotations/json/all_val.json",
+    "loc_tbx11k_root": DATASET_DIR + "TBX11K/imgs",
+    "loc_tbx11k_trainList": DATASET_DIR + "TBX11K/annotations/json/all_train.json",
+    "loc_tbx11k_testList": DATASET_DIR + "TBX11K/annotations/json/all_val.json",
 
     # NODE21 - Classification - Localization
     "cls_node21_root": DATASET_DIR + "NODE21/",
@@ -103,19 +103,19 @@ DATASETS_CONFIG = {
     "loc_rsnapneumonia_testList": DATASET_DIR + "rsna-pneumonia/data_files_splits/rsna_pneumonia/rsnaPneumoniaDetection_Test.json",
 
     # SIIM-ACR - Classification - Localization - Segmentation
-    "cls_siimacr_root": DATASET_DIR + "cxr-full/SIIM-ACR-Pneumothorax/",
-    "cls_siimacr_trainList": DATASET_DIR + "cxr-full/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_train.txt",
-    "cls_siimacr_valList": DATASET_DIR + "cxr-full/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_val.txt",
-    "cls_siimacr_testList": DATASET_DIR + "cxr-full/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_test.txt",
+    "cls_siimacr_root": DATASET_DIR + "SIIM-ACR-Pneumothorax/",
+    "cls_siimacr_trainList": DATASET_DIR + "SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_train.txt",
+    "cls_siimacr_valList": DATASET_DIR + "SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_val.txt",
+    "cls_siimacr_testList": DATASET_DIR + "SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_test.txt",
 
     "loc_siimacr_trainTag": "siimacr_train",
     "loc_siimacr_testTag": "siimacr_val",
     "loc_siimacr_trainRoot": DATASET_DIR + "siim_pneumothorax_segmentation/train_jpeg",
     "loc_siimacr_valRoot": DATASET_DIR + "siim_pneumothorax_segmentation/val_jpeg",
     "loc_siimacr_testRoot": DATASET_DIR + "siim_pneumothorax_segmentation/test_jpeg",
-    "loc_siimacr_trainList": DATASET_DIR + "cxr-full/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/siim_pneumothorax_train_coco.json",
-    "loc_siimacr_valList": DATASET_DIR + "cxr-full/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/siim_pneumothorax_val_coco.json",
-    "loc_siimacr_testList": DATASET_DIR + "cxr-full/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/siim_pneumothorax_test_coco.json",
+    "loc_siimacr_trainList": DATASET_DIR + "SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/siim_pneumothorax_train_coco.json",
+    "loc_siimacr_valList": DATASET_DIR + "SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/siim_pneumothorax_val_coco.json",
+    "loc_siimacr_testList": DATASET_DIR + "SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/siim_pneumothorax_test_coco.json",
 
     "seg_siimacr_trainRoot": DATASET_DIR + "siim_pneumothorax_segmentation/train_jpeg",
     "seg_siimacr_trainList": DATASET_DIR + "pxs/train.txt",
