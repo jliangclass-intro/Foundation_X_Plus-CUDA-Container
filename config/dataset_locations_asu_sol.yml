@@ -78,7 +78,8 @@ classification:
       test: /scratch/sejong/class-dataset/cxr-full/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_test.txt
 
   candid_ptx:
-    images: /scratch/sejong/class-dataset/CANDID-PTX/dataset
+    images_dicom: /scratch/sejong/class-dataset/CANDID-PTX/dataset
+    images: /scratch/sejong/class-dataset/CANDID-PTX/png
     splits:
       train: /scratch/sejong/class-dataset/CANDID-PTX/data_files_splits/candid_ptx/CANDIDPTX_cls_train.txt
       val: /scratch/sejong/class-dataset/CANDID-PTX/data_files_splits/candid_ptx/CANDIDPTX_cls_val.txt
