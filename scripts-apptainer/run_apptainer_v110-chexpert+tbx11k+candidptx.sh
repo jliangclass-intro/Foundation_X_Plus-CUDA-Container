@@ -99,24 +99,32 @@ fi
 export MASTER_ADDR=127.0.0.1
 export MASTER_PORT=29501
 
-# torchrun workers per node (priority: explicit override -> Slurm allocation -> visible devices)
+# Determine workers per node (priority: explicit override -> Slurm allocation -> visible devices)
 if [[ -n "${NPROC_PER_NODE:-}" ]]; then
-	TORCHRUN_NPROC_PER_NODE="$NPROC_PER_NODE"
+	RUN_NPROC_PER_NODE="$NPROC_PER_NODE"
 elif [[ -n "${SLURM_GPUS_ON_NODE:-}" ]]; then
-	TORCHRUN_NPROC_PER_NODE="$(echo "$SLURM_GPUS_ON_NODE" | grep -Eo '[0-9]+' | head -n 1)"
+	RUN_NPROC_PER_NODE="$(echo "$SLURM_GPUS_ON_NODE" | grep -Eo '[0-9]+' | head -n 1)"
 elif [[ -n "${CUDA_VISIBLE_DEVICES:-}" ]]; then
-	TORCHRUN_NPROC_PER_NODE="$(echo "$CUDA_VISIBLE_DEVICES" | awk -F, '{print NF}')"
+	RUN_NPROC_PER_NODE="$(echo "$CUDA_VISIBLE_DEVICES" | awk -F, '{print NF}')"
 elif command -v nvidia-smi >/dev/null 2>&1; then
-	TORCHRUN_NPROC_PER_NODE="$(nvidia-smi -L | wc -l | awk '{print $1}')"
+	RUN_NPROC_PER_NODE="$(nvidia-smi -L | wc -l | awk '{print $1}')"
 else
-	TORCHRUN_NPROC_PER_NODE=1
+	RUN_NPROC_PER_NODE=1
 fi
 
-if [[ -z "${TORCHRUN_NPROC_PER_NODE}" || "${TORCHRUN_NPROC_PER_NODE}" -lt 1 ]]; then
-	TORCHRUN_NPROC_PER_NODE=1
+if [[ -z "${RUN_NPROC_PER_NODE}" || "${RUN_NPROC_PER_NODE}" -lt 1 ]]; then
+	RUN_NPROC_PER_NODE=1
 fi
 
-echo "torchrun nproc_per_node=${TORCHRUN_NPROC_PER_NODE}"
+LAUNCHER=(python)
+ENV_UNSET_ARGS=(-u WORLD_SIZE -u RANK -u LOCAL_RANK -u SLURM_PROCID -u SLURM_LOCALID -u SLURM_NPROCS)
+if [[ "${RUN_NPROC_PER_NODE}" -gt 1 ]]; then
+	echo "Distributed launch enabled: torchrun nproc_per_node=${RUN_NPROC_PER_NODE}"
+	LAUNCHER=(torchrun --standalone --nnodes=1 --nproc_per_node "${RUN_NPROC_PER_NODE}")
+	ENV_UNSET_ARGS=()
+else
+	echo "Distributed launch disabled: single-process (nproc_per_node=${RUN_NPROC_PER_NODE})"
+fi
 
 if [[ -z "${SLURM_JOB_ID:-}" ]]; then
 	echo "Running outside SLURM. This mode assumes GPU resources are already available (interactive session)."
@@ -129,9 +137,10 @@ fi
 # Execute the python script within the Apptainer container
 # The --nv flag enables NVIDIA GPU support
 echo "Launching training script inside Apptainer..."
-DEFAULT_BIND_DIRS="$DEFAULT_BIND_DIRS" ./cuda-apptainer.sh exec env FOUNDATION_X_DATASET_LOCATIONS_YML="$DATASET_LOCATIONS_YML" \
-	torchrun --standalone --nnodes=1 --nproc_per_node "$TORCHRUN_NPROC_PER_NODE" \
-	main_Consolidated.py --taskcomponent foundation_x5_pretraining \
+DEFAULT_BIND_DIRS="$DEFAULT_BIND_DIRS" ./cuda-apptainer.sh exec env \
+	"${ENV_UNSET_ARGS[@]}" \
+	FOUNDATION_X_DATASET_LOCATIONS_YML="$DATASET_LOCATIONS_YML" \
+	"${LAUNCHER[@]}" main_Consolidated.py --taskcomponent foundation_x5_pretraining \
 	--train --numClasses 1 --dataset_file $DATASETFILE --classification_dataset $DATASETFILE --num_workers $num_workers \
 	--coco_path $coco_path --weight-decay 0.0001 \
 	--output_dir $LOGFILE -c $CONFIGFILE --imgsize $IMGSIZE --backbonemodel $BACKBONEMODEL --init $INIT \

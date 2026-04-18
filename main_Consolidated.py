@@ -1828,8 +1828,8 @@ def main(args):
         # Write the seeds to the file
         file.write(f"PyTorch random seed: {torch_seed}\n")
 
-    # print("CHECK before utils.init_distributed_mode.")
-    # utils.init_distributed_mode(args)
+    # Initialize distributed mode from torchrun/SLURM environment.
+    utils.init_distributed_mode(args)
     # load cfg file and update the args
     print("Loading config file from {}".format(args.config_file))
     # time.sleep(args.rank * 0.02)
@@ -1954,9 +1954,13 @@ def main(args):
         ema_m = None
 
     model_without_ddp = model
-    # if args.distributed:
-    #     model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=args.find_unused_params)
-    #     model_without_ddp = model.module
+    if args.distributed:
+        model = torch.nn.parallel.DistributedDataParallel(
+            model,
+            device_ids=[args.gpu],
+            find_unused_parameters=args.find_unused_params,
+        )
+        model_without_ddp = model.module
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
     logger.info('number of params:'+str(n_parameters))
     # logger.info("params:\n"+json.dumps({n: p.numel() for n, p in model.named_parameters() if p.requires_grad}, indent=2))
