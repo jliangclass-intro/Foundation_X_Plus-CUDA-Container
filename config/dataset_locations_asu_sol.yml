@@ -44,10 +44,10 @@ classification:
       test: /scratch/sejong/class-dataset/shenzhen/data_files_splits/ark6_classificationTask/ShenzenCXR_test_data.txt
 
   tbx11k:
-    images: /scratch/sejong/class-dataset/cxr-full/TBX11K
+    images: /scratch/sejong/class-dataset/TBX11K/imgs
     splits:
-      train: /scratch/sejong/class-dataset/cxr-full/TBX11K/lists/TBX11K_train.txt
-      test: /scratch/sejong/class-dataset/cxr-full/TBX11K/lists/TBX11K_val.txt
+      train: /scratch/sejong/class-dataset/TBX11K/lists/TBX11K_train.txt
+      test: /scratch/sejong/class-dataset/TBX11K/lists/TBX11K_val.txt
 
   node21:
     images: /scratch/sejong/class-dataset/NODE21/png_images
@@ -71,11 +71,11 @@ classification:
       test: /scratch/sejong/class-dataset/rsna-pneumonia/data_files_splits/rsna_pneumonia/RSNAPneumonia_test.txt
 
   siim_acr_ptx:
-    images: /scratch/sejong/class-dataset/cxr-full/SIIM-ACR-Pneumothorax
+    images: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax
     splits:
-      train: /scratch/sejong/class-dataset/cxr-full/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_train.txt
-      val: /scratch/sejong/class-dataset/cxr-full/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_val.txt
-      test: /scratch/sejong/class-dataset/cxr-full/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_test.txt
+      train: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_train.txt
+      val: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_val.txt
+      test: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_test.txt
 
   candid_ptx:
     images_dicom: /scratch/sejong/class-dataset/CANDID-PTX/dataset
@@ -102,8 +102,8 @@ segmentation:
     masks_test: /scratch/sejong/class-dataset/ChestX-Det/test_binary_mask
 
   siim_acr_ptx:
-    images_train: /scratch/sejong/class-dataset/cxr-full/SIIM-ACR-Pneumothorax/train_jpeg
-    images_test: /scratch/sejong/class-dataset/cxr-full/SIIM-ACR-Pneumothorax/test_jpeg
+    images_train: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/train_jpeg
+    images_test: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/test_jpeg
     train_list: /scratch/sejong/class-dataset/pxs/train.txt
     test_list: /scratch/sejong/class-dataset/pxs/test.txt
 
