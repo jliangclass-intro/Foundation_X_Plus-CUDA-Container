@@ -61,31 +61,7 @@ from datasets import build_dataset
 from albumentations.pytorch import ToTensorV2
 
 from config.config_datasets import DATASETS_CONFIG
-
-
-def _load_dataset_locations() -> dict:
-    """Load dataset path overrides from the configured YAML file once."""
-    if not hasattr(_load_dataset_locations, "_cache"):
-        yml_path = os.environ.get(
-            "FOUNDATION_X_DATASET_LOCATIONS_YML",
-            "config/dataset_locations_asu_sol.yml",
-        )
-        yml_file = Path(yml_path)
-        if not yml_file.is_absolute():
-            yml_file = Path(__file__).resolve().parent / yml_file
-        with yml_file.open("r", encoding="utf-8") as f:
-            _load_dataset_locations._cache = yaml.safe_load(f) or {}
-    return _load_dataset_locations._cache
-
-
-def _dataset_location(*keys, default=None):
-    cfg = _load_dataset_locations()
-    cur = cfg
-    for key in keys:
-        if not isinstance(cur, dict) or key not in cur:
-            return default
-        cur = cur[key]
-    return cur
+from util.dataset_locations import _dataset_location, _load_dataset_locations
 
 
 def _resolve_image_path(path: str) -> str:
@@ -2695,7 +2671,7 @@ class TBX11KDataset(Dataset):  ## Need to FIX
                 if line:
                     lineItems = line.split()
 
-                    imagePath = os.path.join(images_path, "imgs", lineItems[0])
+                    imagePath = os.path.join(images_path, lineItems[0])
                     if lineItems[0].startswith("tb"):
                         imageLabel = 1
                     else:

@@ -25,6 +25,7 @@ from util.box_ops import box_cxcywh_to_xyxy, box_iou
 from memory_profiler import profile
 
 from config.config_datasets import DATASETS_CONFIG
+from util.dataset_locations import _dataset_location
 
 __all__ = ['build']
 
@@ -743,10 +744,22 @@ def build(image_set, args):
         "eval_debug": (root / "val2017", root / "annotations" / f'{mode}_val2017.json'),
         "test": (root / "test2017", root / "annotations" / 'image_info_test-dev2017.json' ),
 
-        "chestxdet_train": (DATASETS_CONFIG['loc_chestxdet_trainRoot'], DATASETS_CONFIG['loc_chestxdet_trainList']),
-        "chestxdet_train_A": (DATASETS_CONFIG['loc_chestxdet_trainRoot'], '/scratch/jliang12/data/ChestX-Det/ChestX_det_train_A.json'),
-        "chestxdet_train_B": (DATASETS_CONFIG['loc_chestxdet_trainRoot'], '/scratch/jliang12/data/ChestX-Det/ChestX_det_train_B.json'),
-        "chestxdet_test": (DATASETS_CONFIG['loc_chestxdet_testRoot'], DATASETS_CONFIG['loc_chestxdet_testList']),
+        "chestxdet_train": (
+            _dataset_location("localization", "chestx_det", "images_train", default=DATASETS_CONFIG['loc_chestxdet_trainRoot']),
+            _dataset_location("localization", "chestx_det", "splits", "train_json", default=DATASETS_CONFIG['loc_chestxdet_trainList']),
+        ),
+        "chestxdet_train_A": (
+            _dataset_location("localization", "chestx_det", "images_train", default=DATASETS_CONFIG['loc_chestxdet_trainRoot']),
+            '/scratch/jliang12/data/ChestX-Det/ChestX_det_train_A.json',
+        ),
+        "chestxdet_train_B": (
+            _dataset_location("localization", "chestx_det", "images_train", default=DATASETS_CONFIG['loc_chestxdet_trainRoot']),
+            '/scratch/jliang12/data/ChestX-Det/ChestX_det_train_B.json',
+        ),
+        "chestxdet_test": (
+            _dataset_location("localization", "chestx_det", "images_test", default=DATASETS_CONFIG['loc_chestxdet_testRoot']),
+            _dataset_location("localization", "chestx_det", "splits", "test_json", default=DATASETS_CONFIG['loc_chestxdet_testList']),
+        ),
 
         "vindrcxr_train": (DATASETS_CONFIG['loc_vindrcxr_trainRoot'], DATASETS_CONFIG['loc_vindrcxr_trainList']), # annotations_train_coco.json | VinDrCXR_Kaggle_14Diseases_TRAIN.json
         "vindrcxr_test": (DATASETS_CONFIG['loc_vindrcxr_testRoot'], DATASETS_CONFIG['loc_vindrcxr_testList']), # annotations_test_coco.json | VinDrCXR_Kaggle_14Diseases_TEST.json
@@ -790,36 +803,105 @@ def build(image_set, args):
         "vindrcxrOrgan_trainLung": (root / "train_jpeg", root / "annotations/vindrcxr_train_OrganDetection_Lung.json"),
         "vindrcxrOrgan_testLung": (root / "test_jpeg", root / "annotations/vindrcxr_test_OrganDetection_Lung.json"),
 
-        "node21_noduleDataset_train": (DATASETS_CONFIG['loc_node21_root'], DATASETS_CONFIG['loc_node21_trainList']),
-        "node21_noduleDataset_train_A": (DATASETS_CONFIG['loc_node21_root'], '/scratch/jliang12/data/NODE21/cxr_images/proccessed_data/NODE21_train_A.json'),
-        "node21_noduleDataset_train_B": (DATASETS_CONFIG['loc_node21_root'], '/scratch/jliang12/data/NODE21/cxr_images/proccessed_data/NODE21_train_B.json'),
-        "node21_noduleDataset_test": (DATASETS_CONFIG['loc_node21_root'], DATASETS_CONFIG['loc_node21_testList']),
+        "node21_noduleDataset_train": (
+            _dataset_location("localization", "node21", "images", default=DATASETS_CONFIG['loc_node21_root']),
+            _dataset_location("localization", "node21", "splits", "train_json", default=DATASETS_CONFIG['loc_node21_trainList']),
+        ),
+        "node21_noduleDataset_train_A": (
+            _dataset_location("localization", "node21", "images", default=DATASETS_CONFIG['loc_node21_root']),
+            '/scratch/jliang12/data/NODE21/cxr_images/proccessed_data/NODE21_train_A.json',
+        ),
+        "node21_noduleDataset_train_B": (
+            _dataset_location("localization", "node21", "images", default=DATASETS_CONFIG['loc_node21_root']),
+            '/scratch/jliang12/data/NODE21/cxr_images/proccessed_data/NODE21_train_B.json',
+        ),
+        "node21_noduleDataset_test": (
+            _dataset_location("localization", "node21", "images", default=DATASETS_CONFIG['loc_node21_root']),
+            _dataset_location("localization", "node21", "splits", "test_json", default=DATASETS_CONFIG['loc_node21_testList']),
+        ),
 
-        "tbx11k_catagnostic_train": (DATASETS_CONFIG['loc_tbx11k_root'], DATASETS_CONFIG['loc_tbx11k_trainList']),
-        "tbx11k_catagnostic_train_A": (DATASETS_CONFIG['loc_tbx11k_root'], '/scratch/jliang12/data/tbx11k/tbx11k/TBX11K/annotations/TBX11K_train_A.json'),
-        "tbx11k_catagnostic_train_B": (DATASETS_CONFIG['loc_tbx11k_root'], '/scratch/jliang12/data/tbx11k/tbx11k/TBX11K/annotations/TBX11K_train_B.json'),
-        "tbx11k_catagnostic_test": (DATASETS_CONFIG['loc_tbx11k_root'], DATASETS_CONFIG['loc_tbx11k_testList']),
+        "tbx11k_catagnostic_train": (
+            _dataset_location("localization", "tbx11k", "images", default=DATASETS_CONFIG['loc_tbx11k_root']),
+            _dataset_location("localization", "tbx11k", "splits", "train_json", default=DATASETS_CONFIG['loc_tbx11k_trainList']),
+        ),
+        "tbx11k_catagnostic_train_A": (
+            _dataset_location("localization", "tbx11k", "images", default=DATASETS_CONFIG['loc_tbx11k_root']),
+            '/scratch/jliang12/data/tbx11k/tbx11k/TBX11K/annotations/TBX11K_train_A.json',
+        ),
+        "tbx11k_catagnostic_train_B": (
+            _dataset_location("localization", "tbx11k", "images", default=DATASETS_CONFIG['loc_tbx11k_root']),
+            '/scratch/jliang12/data/tbx11k/tbx11k/TBX11K/annotations/TBX11K_train_B.json',
+        ),
+        "tbx11k_catagnostic_test": (
+            _dataset_location("localization", "tbx11k", "images", default=DATASETS_CONFIG['loc_tbx11k_root']),
+            _dataset_location("localization", "tbx11k", "splits", "test_json", default=DATASETS_CONFIG['loc_tbx11k_testList']),
+        ),
         
         "vindrmammo_train":(root, "/annotations_coco/VinDr-mammo_training.json"),
         "vindrmammo_test": (root, "/annotations_coco/VinDr-mammo_testing.json"),
 
-        "candidptx_pneumothorax_train_full":(DATASETS_CONFIG['loc_candidptx_root'], DATASETS_CONFIG['loc_candidptx_trainList']),
-        "candidptx_pneumothorax_train_A":(DATASETS_CONFIG['loc_candidptx_root'], "/scratch/nuislam/Model_Checkpoints/localization_bbox_annotation_collections/CANDID_PTX/CANDID_PTX_train_1_1.json"),
-        "candidptx_pneumothorax_train_B":(DATASETS_CONFIG['loc_candidptx_root'], "/scratch/nuislam/Model_Checkpoints/localization_bbox_annotation_collections/CANDID_PTX/CANDID_PTX_train_1_2.json"),
-        "candidptx_pneumothorax_val":(DATASETS_CONFIG['loc_candidptx_root'], DATASETS_CONFIG['loc_candidptx_valList']),
-        "candidptx_pneumothorax_test": (DATASETS_CONFIG['loc_candidptx_root'], DATASETS_CONFIG['loc_candidptx_testList']),
+        "candidptx_pneumothorax_train_full":(
+            _dataset_location("localization", "candid_ptx", "images", default=DATASETS_CONFIG['loc_candidptx_root']),
+            _dataset_location("localization", "candid_ptx", "splits", "train_json", default=DATASETS_CONFIG['loc_candidptx_trainList']),
+        ),
+        "candidptx_pneumothorax_train_A":(
+            _dataset_location("localization", "candid_ptx", "images", default=DATASETS_CONFIG['loc_candidptx_root']),
+            "/scratch/nuislam/Model_Checkpoints/localization_bbox_annotation_collections/CANDID_PTX/CANDID_PTX_train_1_1.json",
+        ),
+        "candidptx_pneumothorax_train_B":(
+            _dataset_location("localization", "candid_ptx", "images", default=DATASETS_CONFIG['loc_candidptx_root']),
+            "/scratch/nuislam/Model_Checkpoints/localization_bbox_annotation_collections/CANDID_PTX/CANDID_PTX_train_1_2.json",
+        ),
+        "candidptx_pneumothorax_val":(
+            _dataset_location("localization", "candid_ptx", "images", default=DATASETS_CONFIG['loc_candidptx_root']),
+            _dataset_location("localization", "candid_ptx", "splits", "val_json", default=DATASETS_CONFIG['loc_candidptx_valList']),
+        ),
+        "candidptx_pneumothorax_test": (
+            _dataset_location("localization", "candid_ptx", "images", default=DATASETS_CONFIG['loc_candidptx_root']),
+            _dataset_location("localization", "candid_ptx", "splits", "test_json", default=DATASETS_CONFIG['loc_candidptx_testList']),
+        ),
 
-        "rsnaPneumoniaDetection_Train": (DATASETS_CONFIG['loc_rsnapneumonia_root'], DATASETS_CONFIG['loc_rsnapneumonia_trainList']), # rsnaPneumoniaDetection_Train
-        "rsnaPneumoniaDetection_Train_A": (DATASETS_CONFIG['loc_rsnapneumonia_root'], '/scratch/jliang12/data/rsna-pneumonia-detection-challenge/bbox_annotations/rsnaPneumoniaDetection_train_A.json'),
-        "rsnaPneumoniaDetection_Train_B": (DATASETS_CONFIG['loc_rsnapneumonia_root'], '/scratch/jliang12/data/rsna-pneumonia-detection-challenge/bbox_annotations/rsnaPneumoniaDetection_train_B.json'),
-        "rsnaPneumoniaDetection_Valid": (DATASETS_CONFIG['loc_rsnapneumonia_root'], DATASETS_CONFIG['loc_rsnapneumonia_valList']),
-        "rsnaPneumoniaDetection_Test": (DATASETS_CONFIG['loc_rsnapneumonia_root'], DATASETS_CONFIG['loc_rsnapneumonia_testList']),
+        "rsnaPneumoniaDetection_Train": ( # rsnaPneumoniaDetection_Train
+            _dataset_location("localization", "rsna_pneumonia", "images", default=DATASETS_CONFIG['loc_rsnapneumonia_root']),
+            _dataset_location("localization", "rsna_pneumonia", "splits", "train_json", default=DATASETS_CONFIG['loc_rsnapneumonia_trainList']),
+        ),
+        "rsnaPneumoniaDetection_Train_A": (
+            _dataset_location("localization", "rsna_pneumonia", "images", default=DATASETS_CONFIG['loc_rsnapneumonia_root']),
+            '/scratch/jliang12/data/rsna-pneumonia-detection-challenge/bbox_annotations/rsnaPneumoniaDetection_train_A.json',
+        ),
+        "rsnaPneumoniaDetection_Train_B": (
+            _dataset_location("localization", "rsna_pneumonia", "images", default=DATASETS_CONFIG['loc_rsnapneumonia_root']),
+            '/scratch/jliang12/data/rsna-pneumonia-detection-challenge/bbox_annotations/rsnaPneumoniaDetection_train_B.json',
+        ),
+        "rsnaPneumoniaDetection_Valid": (
+            _dataset_location("localization", "rsna_pneumonia", "images", default=DATASETS_CONFIG['loc_rsnapneumonia_root']),
+            _dataset_location("localization", "rsna_pneumonia", "splits", "val_json", default=DATASETS_CONFIG['loc_rsnapneumonia_valList']),
+        ),
+        "rsnaPneumoniaDetection_Test": (
+            _dataset_location("localization", "rsna_pneumonia", "images", default=DATASETS_CONFIG['loc_rsnapneumonia_root']),
+            _dataset_location("localization", "rsna_pneumonia", "splits", "test_json", default=DATASETS_CONFIG['loc_rsnapneumonia_testList']),
+        ),
 
-        "siimacr_train": (DATASETS_CONFIG['loc_siimacr_trainRoot'], DATASETS_CONFIG['loc_siimacr_trainList']),
-        "siimacr_train_A": (DATASETS_CONFIG['loc_siimacr_trainRoot'], '/scratch/nuislam/Model_Checkpoints/localization_bbox_annotation_collections/SIIM-ACR_Pneumothorax/siim_pneumothorax_train_coco_A.json'),
-        "siimacr_train_B": (DATASETS_CONFIG['loc_siimacr_trainRoot'], '/scratch/nuislam/Model_Checkpoints/localization_bbox_annotation_collections/SIIM-ACR_Pneumothorax/siim_pneumothorax_train_coco_B.json'),
-        "siimacr_val": (DATASETS_CONFIG['loc_siimacr_valRoot'], DATASETS_CONFIG['loc_siimacr_valList']),
-        "siimacr_test": (DATASETS_CONFIG['loc_siimacr_testRoot'], DATASETS_CONFIG['loc_siimacr_testList']),
+        "siimacr_train": (
+            _dataset_location("localization", "siim_acr_ptx", "images_train", default=DATASETS_CONFIG['loc_siimacr_trainRoot']),
+            _dataset_location("localization", "siim_acr_ptx", "splits", "train_json", default=DATASETS_CONFIG['loc_siimacr_trainList']),
+        ),
+        "siimacr_train_A": (
+            _dataset_location("localization", "siim_acr_ptx", "images_train", default=DATASETS_CONFIG['loc_siimacr_trainRoot']),
+            '/scratch/nuislam/Model_Checkpoints/localization_bbox_annotation_collections/SIIM-ACR_Pneumothorax/siim_pneumothorax_train_coco_A.json',
+        ),
+        "siimacr_train_B": (
+            _dataset_location("localization", "siim_acr_ptx", "images_train", default=DATASETS_CONFIG['loc_siimacr_trainRoot']),
+            '/scratch/nuislam/Model_Checkpoints/localization_bbox_annotation_collections/SIIM-ACR_Pneumothorax/siim_pneumothorax_train_coco_B.json',
+        ),
+        "siimacr_val": (
+            _dataset_location("localization", "siim_acr_ptx", "images_val", default=DATASETS_CONFIG['loc_siimacr_valRoot']),
+            _dataset_location("localization", "siim_acr_ptx", "splits", "val_json", default=DATASETS_CONFIG['loc_siimacr_valList']),
+        ),
+        "siimacr_test": (
+            _dataset_location("localization", "siim_acr_ptx", "images_test", default=DATASETS_CONFIG['loc_siimacr_testRoot']),
+            _dataset_location("localization", "siim_acr_ptx", "splits", "test_json", default=DATASETS_CONFIG['loc_siimacr_testList']),
+        ),
 
         "objects365_train" : ("/scratch/jliang12/data/objects365/train", "/scratch/nralbert/research/data/o365/train/zhiyuan_objv2_train_fix.json"), # Fixed file paths for folder structure
         "objects365_test" : ("/scratch/jliang12/data/objects365/test", "/scratch/nralbert/research/data/o365/test/zhiyuan_objv2_test_fix_cleaned_pruned.json"), # 10% reduced test set: 10PERCzhiyuan_objv2_test_fix_cleaned.json    # normal ann file: zhiyuan_objv2_test_fix_cleaned_pruned.json

@@ -59,7 +59,7 @@ lr_locEnc=1e-4
 lr_locDec=1e-4
 lr_segmentor=1e-4
 
-BATCHSIZE=${BATCHSIZE:-24}
+BATCHSIZE=${BATCHSIZE:-12}
 num_workers=${num_workers:-12}
 INIT=${INIT:-ark}
 total_epochs=${total_epochs:-2000}

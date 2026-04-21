@@ -208,21 +208,51 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
 
             losses = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
 
+        # NOTE:
+        # The original implementation (kept below for reference) deep-copied the
+        # DDP model and performed an extra student forward pass every iteration.
+        # In multi-GPU runs this can destabilize DDP reducer/autograd state.
+        # The current implementation reuses student features from the main forward
+        # pass and computes teacher features in no_grad mode only.
+        #
+        # Original implementation:
+        # if model_ema is not None:
+        #     model_org_temp = copy.deepcopy(model)
+        #     model_org_temp.eval()
+        #     # with torch.no_grad():
+        #     with torch.cuda.amp.autocast(enabled=args.amp):
+        #         if need_tgt_for_training:
+        #             _, features_cons, features_Encons = model_org_temp(samples, targets)
+        #             _, features_cons_ema, features_Encons_ema = model_ema(samples, targets)
+        #         else:
+        #             _, features_cons, features_Encons = model_org_temp(samples)
+        #             _, features_cons_ema, features_Encons_ema = model_ema(samples)
+        #     del model_org_temp
+        #     loss_cons = criterionMSE(features_cons, features_cons_ema)
+        #     loss_cons_2 = criterionMSE(features_Encons, features_Encons_ema)
+        #     losses = (1-coff)*losses + coff*((loss_cons+loss_cons_2)/2)
         if model_ema is not None:
-            model_org_temp = copy.deepcopy(model)
-            model_org_temp.eval()
-            # with torch.no_grad():
-            with torch.cuda.amp.autocast(enabled=args.amp):
-                if need_tgt_for_training:
-                    _, features_cons, features_Encons = model_org_temp(samples, targets)
-                    _, features_cons_ema, features_Encons_ema = model_ema(samples, targets)
-                else:
-                    _, features_cons, features_Encons = model_org_temp(samples)
-                    _, features_cons_ema, features_Encons_ema = model_ema(samples)
-            del model_org_temp
+            model_ema.eval()
+            with torch.no_grad():
+                with torch.cuda.amp.autocast(enabled=args.amp):
+                    if need_tgt_for_training:
+                        _, features_cons_ema, features_Encons_ema = model_ema(samples, targets)
+                    else:
+                        _, features_cons_ema, features_Encons_ema = model_ema(samples)
+
+            # When DN is active the student decoder output has DN queries prepended
+            # (indices 0..pad_size-1) followed by the regular queries (pad_size..end).
+            # The EMA model is in eval mode so prepare_for_cdn returns no DN queries,
+            # leaving it with only num_queries tokens. Strip the DN prefix from the
+            # student features so both tensors have the same shape before MSE.
+            dn_meta = outputs.get('dn_meta')
+            if dn_meta is not None and dn_meta.get('pad_size', 0) > 0:
+                pad_size = dn_meta['pad_size']
+                features_cons = features_cons[:, :, pad_size:, :]
+
             loss_cons = criterionMSE(features_cons, features_cons_ema)
             loss_cons_2 = criterionMSE(features_Encons, features_Encons_ema)
-            losses = (1-coff)*losses + coff*( (loss_cons+loss_cons_2)/2 )
+            losses = (1-coff)*losses + coff*((loss_cons+loss_cons_2)/2)
             
 
         ### Collecting Localization Encoder Weights for Regularizer

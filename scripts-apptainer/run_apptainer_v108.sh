@@ -59,7 +59,7 @@ lr_locEnc=1e-4
 lr_locDec=1e-4
 lr_segmentor=1e-4
 
-BATCHSIZE=${BATCHSIZE:-24}
+BATCHSIZE=${BATCHSIZE:-12}
 num_workers=${num_workers:-12}
 INIT=${INIT:-ark}
 total_epochs=${total_epochs:-2000}
@@ -117,10 +117,20 @@ if [[ -z "${RUN_NPROC_PER_NODE}" || "${RUN_NPROC_PER_NODE}" -lt 1 ]]; then
 fi
 
 LAUNCHER=(python)
+DDP_EXTRA_ARGS=()
 ENV_UNSET_ARGS=(-u WORLD_SIZE -u RANK -u LOCAL_RANK -u SLURM_PROCID -u SLURM_LOCALID -u SLURM_NPROCS)
 if [[ "${RUN_NPROC_PER_NODE}" -gt 1 ]]; then
 	echo "Distributed launch enabled: torchrun nproc_per_node=${RUN_NPROC_PER_NODE}"
 	LAUNCHER=(torchrun --standalone --nnodes=1 --nproc_per_node "${RUN_NPROC_PER_NODE}")
+	# Cyclic multi-task batches can legitimately leave some heads unused per step.
+	# Enable DDP unused parameter detection by default for multi-GPU safety.
+	FIND_UNUSED_PARAMS=${FIND_UNUSED_PARAMS:-auto}
+	if [[ "${FIND_UNUSED_PARAMS}" == "auto" || "${FIND_UNUSED_PARAMS}" == "true" ]]; then
+		DDP_EXTRA_ARGS+=(--find_unused_params)
+		echo "DDP setting: enabling --find_unused_params"
+	else
+		echo "DDP setting: --find_unused_params disabled via FIND_UNUSED_PARAMS=${FIND_UNUSED_PARAMS}"
+	fi
 	ENV_UNSET_ARGS=()
 else
 	echo "Distributed launch disabled: single-process (nproc_per_node=${RUN_NPROC_PER_NODE})"
@@ -148,6 +158,7 @@ DEFAULT_BIND_DIRS="$DEFAULT_BIND_DIRS" ./cuda-apptainer.sh exec env \
 	--finetune_ignore label_enc.weight class_embed \
 	--backbone_dir $backbone_dir --lr_backbone $lr_backbone --lr_locEnc $lr_locEnc --lr_locDec $lr_locDec  --lr_segmentor $lr_segmentor \
 	--cyclictask $cyclictask --modelEMA $EMAMODE --lockrelease --saveAllModel \
+	"${DDP_EXTRA_ARGS[@]}" \
 	${EXTRA_ARGS[@]} \
 	--options dn_scalar=100 embed_init_tgt=TRUE \
 	dn_label_coef=1.0 dn_bbox_coef=1.0 use_ema=False \

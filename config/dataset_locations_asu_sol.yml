@@ -78,7 +78,8 @@ classification:
       test: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/SIIMPTX_cls_test.txt
 
   candid_ptx:
-    use_dicom: false
+    # Classification uses DICOM images; localization uses PNG + JSON bbox files.
+    use_dicom: true
     images_dicom: /scratch/sejong/class-dataset/CANDID-PTX/dataset
     images: /scratch/sejong/class-dataset/CANDID-PTX/png
     splits:
@@ -89,6 +90,54 @@ classification:
       val_json: /scratch/sejong/class-dataset/CANDID-PTX/data_files_splits/candid_ptx/CANDID_PTX_valid_1.json
       test_json: /scratch/sejong/class-dataset/CANDID-PTX/data_files_splits/candid_ptx/CANDID_PTX_test_1.json
 
+# -----------------------------------------------------------------------------------------------------------------------
+localization:
+  tbx11k:
+    images: /scratch/sejong/class-dataset/TBX11K/imgs
+    splits:
+      train_json: /scratch/sejong/class-dataset/TBX11K/annotations/json/all_train.json
+      test_json: /scratch/sejong/class-dataset/TBX11K/annotations/json/all_val.json
+
+  node21:
+    images: /scratch/sejong/class-dataset/NODE21/png_images
+    splits:
+      train_json: /scratch/sejong/class-dataset/NODE21/data_files_splits/node21_dataset/Node21_Nodule_Bbox_NAD_train_3.json
+      test_json: /scratch/sejong/class-dataset/NODE21/data_files_splits/node21_dataset/Node21_Nodule_Bbox_NAD_test_3.json
+
+  chestx_det:
+    # Localization uses separate train/test image directories.
+    images_train: /scratch/sejong/class-dataset/ChestX-Det/train
+    images_test: /scratch/sejong/class-dataset/ChestX-Det/test
+    splits:
+      train_json: /scratch/sejong/class-dataset/ChestX-Det/ChestX_det_train_NAD_v2.json
+      test_json: /scratch/sejong/class-dataset/ChestX-Det/ChestX_det_test_NAD_v2.json
+
+  rsna_pneumonia:
+    images: /scratch/sejong/class-dataset/rsna-pneumonia/stage_2_train_images_png
+    splits:
+      train_json: /scratch/sejong/class-dataset/rsna-pneumonia/data_files_splits/rsna_pneumonia/rsnaPneumoniaDetection_Train.json
+      val_json: /scratch/sejong/class-dataset/rsna-pneumonia/data_files_splits/rsna_pneumonia/rsnaPneumoniaDetection_Valid.json
+      test_json: /scratch/sejong/class-dataset/rsna-pneumonia/data_files_splits/rsna_pneumonia/rsnaPneumoniaDetection_Test.json
+
+  siim_acr_ptx:
+    # Localization uses separate train/val/test image directories.
+    images_train: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/train_jpeg
+    images_val: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/val_jpeg
+    images_test: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/test_jpeg
+    splits:
+      train_json: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/siim_pneumothorax_train_coco.json
+      val_json: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/siim_pneumothorax_val_coco.json
+      test_json: /scratch/sejong/class-dataset/SIIM-ACR-Pneumothorax/data_files_splits/siimacr_ptx/siim_pneumothorax_test_coco.json
+
+  candid_ptx:
+    # Localization uses PNG images with COCO-format JSON bbox annotations.
+    images: /scratch/sejong/class-dataset/CANDID-PTX/png
+    splits:
+      train_json: /scratch/sejong/class-dataset/CANDID-PTX/data_files_splits/candid_ptx/CANDID_PTX_train_1.json
+      val_json: /scratch/sejong/class-dataset/CANDID-PTX/data_files_splits/candid_ptx/CANDID_PTX_valid_1.json
+      test_json: /scratch/sejong/class-dataset/CANDID-PTX/data_files_splits/candid_ptx/CANDID_PTX_test_1.json
+
+# -----------------------------------------------------------------------------------------------------------------------
 segmentation:
   inspect:
     images: /scratch/sejong/class-dataset/stanford/INSPECT-Multaimodal-PE/full/CTPA
