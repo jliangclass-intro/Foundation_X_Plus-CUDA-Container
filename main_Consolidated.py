@@ -1097,8 +1097,23 @@ def train_one_epoch_SEGMENTATION_SharedLocSeg(model, train_loader, optimizer, lo
 
         optimizer.zero_grad(set_to_none=True)
         is_second_order = hasattr(optimizer, 'is_second_order') and optimizer.is_second_order
-        loss_scaler(loss, optimizer, clip_grad=None,
-                    parameters=model.parameters(), create_graph=is_second_order)
+        # --- DDP DYNAMIC FREEZE WORKAROUND (PRE-BACKWARD) ---
+        # seeding zeros to satisfy DDP reducer
+        for param in model.parameters():
+            if not param.requires_grad and param.grad is None:
+                param.grad = torch.zeros_like(param.data)
+
+        # Unrolling loss_scaler to inject post-backward hook
+        loss_scaler._scaler.scale(loss).backward(create_graph=is_second_order)
+
+        # --- DDP DYNAMIC FREEZE WORKAROUND (POST-BACKWARD) ---
+        # Re-hide the frozen .grad from the optimizer to prevent weight decay updates
+        for param in model.parameters():
+            if not param.requires_grad:
+                param.grad = None
+
+        loss_scaler._scaler.step(optimizer)
+        loss_scaler._scaler.update()
 
         torch.cuda.synchronize()
 
@@ -1959,6 +1974,7 @@ def main(args):
             model,
             device_ids=[args.gpu],
             find_unused_parameters=args.find_unused_params,
+            gradient_as_bucket_view=True,
         )
         model_without_ddp = model.module
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)

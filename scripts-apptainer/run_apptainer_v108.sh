@@ -117,24 +117,19 @@ if [[ -z "${RUN_NPROC_PER_NODE}" || "${RUN_NPROC_PER_NODE}" -lt 1 ]]; then
 fi
 
 LAUNCHER=(python)
-DDP_EXTRA_ARGS=()
+# Cyclic multi-task batches leave some task heads unused per localization step,
+# producing undefined (None) gradients that DDP would still try to allreduce.
+# Always pass --find_unused_params for this model regardless of GPU count.
+DDP_EXTRA_ARGS=(--find_unused_params)
 ENV_UNSET_ARGS=(-u WORLD_SIZE -u RANK -u LOCAL_RANK -u SLURM_PROCID -u SLURM_LOCALID -u SLURM_NPROCS)
 if [[ "${RUN_NPROC_PER_NODE}" -gt 1 ]]; then
 	echo "Distributed launch enabled: torchrun nproc_per_node=${RUN_NPROC_PER_NODE}"
 	LAUNCHER=(torchrun --standalone --nnodes=1 --nproc_per_node "${RUN_NPROC_PER_NODE}")
-	# Cyclic multi-task batches can legitimately leave some heads unused per step.
-	# Enable DDP unused parameter detection by default for multi-GPU safety.
-	FIND_UNUSED_PARAMS=${FIND_UNUSED_PARAMS:-auto}
-	if [[ "${FIND_UNUSED_PARAMS}" == "auto" || "${FIND_UNUSED_PARAMS}" == "true" ]]; then
-		DDP_EXTRA_ARGS+=(--find_unused_params)
-		echo "DDP setting: enabling --find_unused_params"
-	else
-		echo "DDP setting: --find_unused_params disabled via FIND_UNUSED_PARAMS=${FIND_UNUSED_PARAMS}"
-	fi
 	ENV_UNSET_ARGS=()
 else
 	echo "Distributed launch disabled: single-process (nproc_per_node=${RUN_NPROC_PER_NODE})"
 fi
+echo "DDP setting: --find_unused_params enabled (always on for cyclic multi-task model)"
 
 if [[ -z "${SLURM_JOB_ID:-}" ]]; then
 	echo "Running outside SLURM. This mode assumes GPU resources are already available (interactive session)."

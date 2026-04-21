@@ -435,7 +435,7 @@ class InternImageLayer(nn.Module):
             return x
 
         if self.with_cp and x.requires_grad:
-            x = checkpoint.checkpoint(_inner_forward, x)
+            x = checkpoint.checkpoint(_inner_forward, x, use_reentrant=False)
         else:
             x = _inner_forward(x)
         return x
