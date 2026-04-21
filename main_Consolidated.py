@@ -899,7 +899,7 @@ def train_one_epoch_SEGMENTATION_SharedLocSeg(model, train_loader, optimizer, lo
             outputs, _, _ = model(samples) # outputs = [24, 900, 4]
             target_sizes = torch.tensor([[args.imgsize, args.imgsize]] * samples.shape[0]).cuda()
             results = postprocessors['bbox'](outputs, target_sizes, not_to_xyxy=True) ## Results should be list which length = batch_size
-            thershold = 0.3 # set a thershold
+            threshold = 0.3 # set a threshold
             output_bbox = []
             for iIndex in range(len(results)):  # Iterate over each image in the batch
                 scores = results[iIndex]['scores']  # Confidence scores for the boxes
@@ -994,7 +994,7 @@ def train_one_epoch_SEGMENTATION_SharedLocSeg(model, train_loader, optimizer, lo
                 outputs, _, _ = model_ema(samples) # outputs = [24, 900, 4]
                 target_sizes = torch.tensor([[args.imgsize, args.imgsize]] * samples.shape[0]).cuda()
                 results = postprocessors['bbox'](outputs, target_sizes, not_to_xyxy=True) ## Results should be list which length = batch_size
-                thershold = 0.3 # set a thershold
+                threshold = 0.3 # set a threshold
                 output_bbox = []
                 for iIndex in range(len(results)):  # Iterate over each image in the batch
                     scores = results[iIndex]['scores']  # Confidence scores for the boxes
