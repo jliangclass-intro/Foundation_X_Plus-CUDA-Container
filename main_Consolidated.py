@@ -896,7 +896,8 @@ def train_one_epoch_SEGMENTATION_SharedLocSeg(model, train_loader, optimizer, lo
         if isinstance(model, torch.nn.parallel.DistributedDataParallel):
             model.task_DetHead = head_number
             model.eval()
-            outputs, _, _ = model(samples) # outputs = [24, 900, 4]
+            with torch.no_grad():
+                outputs, _, _ = model(samples) # outputs = [24, 900, 4]
             target_sizes = torch.tensor([[args.imgsize, args.imgsize]] * samples.shape[0]).cuda()
             results = postprocessors['bbox'](outputs, target_sizes, not_to_xyxy=True) ## Results should be list which length = batch_size
             threshold = 0.3 # set a threshold
@@ -928,7 +929,8 @@ def train_one_epoch_SEGMENTATION_SharedLocSeg(model, train_loader, optimizer, lo
         else:
             model.task_DetHead = head_number
             model.eval()
-            outputs, _, _ = model(samples) # outputs = [24, 900, 4]
+            with torch.no_grad():
+                outputs, _, _ = model(samples) # outputs = [24, 900, 4]
             target_sizes = torch.tensor([[args.imgsize, args.imgsize]] * samples.shape[0]).cuda()
             results = postprocessors['bbox'](outputs, target_sizes, not_to_xyxy=True) ## Results should be list which length = batch_size ## 24
             threshold = 0.3 # set a thershold
@@ -991,7 +993,8 @@ def train_one_epoch_SEGMENTATION_SharedLocSeg(model, train_loader, optimizer, lo
             if isinstance(model_ema, torch.nn.parallel.DistributedDataParallel):
                 model_ema.task_DetHead = head_number
                 model_ema.eval()
-                outputs, _, _ = model_ema(samples) # outputs = [24, 900, 4]
+                with torch.no_grad():
+                    outputs, _, _ = model_ema(samples) # outputs = [24, 900, 4]
                 target_sizes = torch.tensor([[args.imgsize, args.imgsize]] * samples.shape[0]).cuda()
                 results = postprocessors['bbox'](outputs, target_sizes, not_to_xyxy=True) ## Results should be list which length = batch_size
                 threshold = 0.3 # set a threshold
@@ -1024,7 +1027,8 @@ def train_one_epoch_SEGMENTATION_SharedLocSeg(model, train_loader, optimizer, lo
             else:
                 model_ema.task_DetHead = head_number
                 model_ema.eval()
-                outputs, _, _ = model_ema(samples) # outputs = [24, 900, 4]
+                with torch.no_grad():
+                    outputs, _, _ = model_ema(samples) # outputs = [24, 900, 4]
                 target_sizes = torch.tensor([[args.imgsize, args.imgsize]] * samples.shape[0]).cuda()
                 results = postprocessors['bbox'](outputs, target_sizes, not_to_xyxy=True) ## Results should be list which length = batch_size
                 threshold = 0.3 # set a thershold

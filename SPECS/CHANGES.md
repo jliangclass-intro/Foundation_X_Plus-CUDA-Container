@@ -215,3 +215,46 @@ Note: `features_Encons` (encoder features) is not affected because DN tokens are
 | 3 | `datasets/coco.py` | Route all 6 localization dataset paths through `_dataset_location()` | Make paths portable across clusters via YAML |
 | 3 | `config/dataset_locations_asu_sol.yml` | Added `localization:` section for all 6 datasets | ASU SOL scratch filesystem path definitions |
 | 4 | `engine.py` | Added DN-aware `features_cons` slice after EMA forward | Fix `RuntimeError: size mismatch` when DN and EMA are both enabled |
+| 5 | `main_Consolidated.py` | Wrapped bounding box inference passes in `torch.no_grad()` | Fix DDP `RuntimeError: Expected to mark a variable ready only once` by preventing DDP hook registration for non-backpropagated parameters |
+## Change 5 — DDP Parameter Ready Twice Error in Segmentation Training
+
+### Problem
+
+During segmentation training with `DistributedDataParallel` (DDP), the training crashed with:
+
+```
+RuntimeError: Expected to mark a variable ready only once. This error is caused by one of the following reasons: 1) Use of a module parameter outside the `forward` function. Please make sure model parameters are not shared across multiple concurrent forward-backward passes.
+...
+Parameter at index 747 with name backbone.0.segmentation_FPN.conv_fusion.1.weight has been marked as ready twice.
+```
+
+This occurred during the backward pass in `train_one_epoch_SEGMENTATION_SharedLocSeg` inside `main_Consolidated.py`.
+
+### Root cause
+
+In `train_one_epoch_SEGMENTATION_SharedLocSeg`, the script runs a detection forward pass to generate pseudo-label bounding boxes for `roi_align`.
+```python
+if isinstance(model, torch.nn.parallel.DistributedDataParallel):
+    model.task_DetHead = head_number
+    model.eval()
+    outputs, _, _ = model(samples)
+```
+Because `model(samples)` was not wrapped in `with torch.no_grad():`, PyTorch tracked the computational graph, and DDP registered synchronization hooks for the involved parameters. However, `outputs` is only used to compute `.tolist()` bounding boxes and is not backpropagated through. Later, when `model.module.backbone[0].extra_features_seg_sharedLocSeg(...)` is explicitly called for segmentation and its loss is backpropagated, PyTorch computes gradients for the same parameters. The active DDP hooks from the first unused forward pass fire, causing PyTorch to incorrectly assume that multiple backward passes (or reentrant ones) are improperly marking the variables ready twice.
+
+### Fix
+
+**File:** `main_Consolidated.py`
+
+Wrapped the detection forward pass block inside `train_one_epoch_SEGMENTATION_SharedLocSeg` with `with torch.no_grad():` for both the main `model` and `model_ema`.
+
+```python
+if isinstance(model, torch.nn.parallel.DistributedDataParallel):
+    model.task_DetHead = head_number
+    model.eval()
+    with torch.no_grad():
+        outputs, _, _ = model(samples) # outputs = [24, 900, 4]
+```
+
+This ensures PyTorch skips building a computational graph and does not trigger DDP's autograd hooks for the bounding box generation step, resolving the error and improving memory efficiency.
+
+---
